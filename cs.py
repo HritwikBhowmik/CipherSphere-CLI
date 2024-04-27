@@ -40,6 +40,7 @@ def __encrypt():
         os.system("java -jar secure_CiperSphere-CLI.jar encrypt "+key)
     else:
         print("{0}[-] Key size must be 8 character long {1}".format(red, end))
+        __encrypt()
 
 
 def __decrypt():
@@ -49,6 +50,7 @@ def __decrypt():
         os.system("java -jar secure_CiperSphere-CLI.jar decrypt "+key)
     else:
         print("{0}[-] Key size must be 8 character long {1}".format(red, end))
+        __decrypt()
 
 
 def insert_data(conn, c):
@@ -72,30 +74,30 @@ def search_data(conn, c):
         name = sys.argv[3]
         c.execute("SELECT * FROM manager WHERE Names=?", [name])
         _lsname = c.fetchall()
-        print("id   Name        Credential            Password")
-        print("--   ----        ----------            --------")
+        print("id\tName\t\tCredential\t\t\tPassword")
+        print("--\t----\t\t----------\t\t\t--------")
         for _name in _lsname:
             #print("{3}  {0} {2} {1}  {4}   {5}".format(cyan, end, _name[1], _name[0], _name[2], _name[3]))
-            print("{3}  {0} {2} {1}  {4}   {5}".format(cyan, end, _name[1], _name[0], _name[2], hashlib.md5(_name[3].encode('utf')).hexdigest()))
+            print("{3}\t{0} {2} {1}\t{4}\t{5}".format(cyan, end, _name[1], _name[0], _name[2], hashlib.md5(_name[3].encode('utf')).hexdigest()))
     elif '-c' == sys.argv[2] or '--credential' == sys.argv[2]:
         cred = sys.argv[3]
         c.execute("SELECT * FROM manager WHERE Credentials=?", [cred])
         _lscred = c.fetchall()
-        print("id   Name        Credential            Password")
-        print("--   ----        ----------            --------")
+        print("id\tName\t\tCredential\t\t\tPassword")
+        print("--\t----\t\t----------\t\t\t--------")
         for _cred in _lscred:
             #print("{3}  {2}  {0} {4} {1}   {5}".format(cyan, end, _cred[1], _cred[0], _cred[2], _cred[3]))
-            print("{3}  {2}  {0} {4} {1}   {5}".format(cyan, end, _cred[1], _cred[0], _cred[2], hashlib.md5(_cred[3].encode('utf')).hexdigest()))
+            print("{3}\t{2}\t{0} {4} {1}\t{5}".format(cyan, end, _cred[1], _cred[0], _cred[2], hashlib.md5(_cred[3].encode('utf')).hexdigest()))
             # id[0] name[1] cred[2] pass[3]
     elif '-p' == sys.argv[2] or '--password' == sys.argv[2]:
         key = sys.argv[3]
         c.execute("SELECT * FROM manager WHERE Passwords=?", [key])
         _lskey = c.fetchall()
-        print("id   Name        Credential            Password")
-        print("--   ----        ----------            --------")
+        print("id\tName\t\tCredential\t\t\tPassword")
+        print("--\t----\t\t----------\t\t\t--------")
         for _key in _lskey:
             #print("{3}  {2}  {4}   {0} {5} {1}".format(cyan, end, _key[1], _key[0], _key[2], _key[3]))
-            print("{3}  {2}  {4}   {0} {5} {1}".format(cyan, end, _key[1], _key[0], _key[2], hashlib.md5(_key[3].encode('utf')).hexdigest()))
+            print("{3}\t{2}\t{4}\t{0} {5} {1}".format(cyan, end, _key[1], _key[0], _key[2], hashlib.md5(_key[3].encode('utf')).hexdigest()))
     __end()
 
 
@@ -108,7 +110,8 @@ def show_database(conn, c):
         print("| Name     | credentials          || Passwords                                        |")
         print("+-------------------+-------+-----------+-----------+---------------------------------+")
         for _name in _lsname:
-            print("| {0} | {1}    || {2}                     >>".format(_name[1], _name[2], _name[3]))
+            #print("| {0} | {1}    || {2}                     >>".format(_name[1], _name[2], _name[3]))
+            print("| {0} | {1}    || {2}         >>".format(_name[1], _name[2], hashlib.md5(_name[3].encode('utf')).hexdigest()))
             print("+-------------------+-------+-----------+-----------+---------------------------------+")
             # print(_name[:])
     if sys.argv[2] == '-c' or sys.argv[2] == '--credential':
@@ -119,7 +122,8 @@ def show_database(conn, c):
         print("| Name     | credentials          || Passwords                                        |")
         print("+-------------------+-------+-----------+-----------+---------------------------------+")
         for _cred in _lscred:
-            print("| {0} | {1}    || {2}                     >>".format(_cred[1], _cred[2], _cred[3]))
+            #print("| {0} | {1}    || {2}                     >>".format(_cred[1], _cred[2], _cred[3]))
+            print("| {0} | {1}    || {2}          >>".format(_cred[1], _cred[2], hashlib.md5(_cred[3].encode('utf')).hexdigest()))
             print("+-------------------+-------+-----------+-----------+---------------------------------+")
             # print(_cred[:])
     if sys.argv[2] == '-p' or sys.argv[2] == '--password':
@@ -130,7 +134,8 @@ def show_database(conn, c):
         print("| Name     | credentials          || Passwords                                        |")
         print("+-------------------+-------+-----------+-----------+---------------------------------+")
         for _key in -_lskey:
-            print("| {0} | {1}    || {2}                     >>".format(_key[1], _key[2], _key[3]))
+            #print("| {0} | {1}    || {2}                     >>".format(_key[1], _key[2], _key[3]))
+            print("| {0} | {1}    || {2}            >>".format(_key[1], _key[2], hashlib.md5(_key[3].encode('utf')).hexdigest()))
             print("+-------------------+-------+-----------+-----------+---------------------------------+")
     if 'n' in sys.argv[2] and \
             'c' in sys.argv[2] and \
