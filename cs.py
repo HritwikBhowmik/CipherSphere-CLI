@@ -3,6 +3,7 @@ import colorama
 import sys
 import sqlite3
 import clipboard
+import hashlib
 
 colorama.init()
 red = '\033[91m'
@@ -74,7 +75,8 @@ def search_data(conn, c):
         print("id   Name        Credential            Password")
         print("--   ----        ----------            --------")
         for _name in _lsname:
-            print("{3}  {0} {2} {1}  {4}   {5}".format(cyan, end, _name[1], _name[0], _name[2], _name[3]))
+            #print("{3}  {0} {2} {1}  {4}   {5}".format(cyan, end, _name[1], _name[0], _name[2], _name[3]))
+            print("{3}  {0} {2} {1}  {4}   {5}".format(cyan, end, _name[1], _name[0], _name[2], hashlib.md5(_name[3].encode('utf')).hexdigest()))
     elif '-c' == sys.argv[2] or '--credential' == sys.argv[2]:
         cred = sys.argv[3]
         c.execute("SELECT * FROM manager WHERE Credentials=?", [cred])
@@ -82,7 +84,8 @@ def search_data(conn, c):
         print("id   Name        Credential            Password")
         print("--   ----        ----------            --------")
         for _cred in _lscred:
-            print("{3}  {2}  {0} {4} {1}   {5}".format(cyan, end, _cred[1], _cred[0], _cred[2], _cred[3]))
+            #print("{3}  {2}  {0} {4} {1}   {5}".format(cyan, end, _cred[1], _cred[0], _cred[2], _cred[3]))
+            print("{3}  {2}  {0} {4} {1}   {5}".format(cyan, end, _cred[1], _cred[0], _cred[2], hashlib.md5(_cred[3].encode('utf')).hexdigest()))
             # id[0] name[1] cred[2] pass[3]
     elif '-p' == sys.argv[2] or '--password' == sys.argv[2]:
         key = sys.argv[3]
@@ -91,7 +94,8 @@ def search_data(conn, c):
         print("id   Name        Credential            Password")
         print("--   ----        ----------            --------")
         for _key in _lskey:
-            print("{3}  {2}  {4}   {0} {5} {1}".format(cyan, end, _key[1], _key[0], _key[2], _key[3]))
+            #print("{3}  {2}  {4}   {0} {5} {1}".format(cyan, end, _key[1], _key[0], _key[2], _key[3]))
+            print("{3}  {2}  {4}   {0} {5} {1}".format(cyan, end, _key[1], _key[0], _key[2], hashlib.md5(_key[3].encode('utf')).hexdigest()))
     __end()
 
 
@@ -138,7 +142,8 @@ def show_database(conn, c):
         print("| Name     | credentials          || Passwords                                        |")
         print("+-------------------+-------+-----------+-----------+---------------------------------+")
         for _all in _lsall:
-            print("| {0} | {1}    || {2}                     >>".format(_all[1], _all[2], _all[3]))
+            #print("| {0} | {1}    || {2}                     >>".format(_all[1], _all[2], _all[3]))
+            print("| {0} | {1}    || {2}        >>".format(_all[1], _all[2], hashlib.md5(_all[3].encode('utf')).hexdigest()))
             print("+-------------------+-------+-----------+-----------+---------------------------------+")
     __end()
 
@@ -170,6 +175,21 @@ def delete_data(conn, c):
         c.execute("DELETE FROM manager WHERE id=?", [id])
         conn.commit()
     print("{0}[-] Data delete successfully {1}".format(red, end))
+    __end()
+
+
+# python cs.py copy -i 1
+#                1   2 3
+def copy_db(conn, c):
+    id = sys.argv[3]
+    if sys.argv[2] == '-i' or sys.argv[2] == '--id':
+        c.execute("SELECT * FROM manager WHERE id=?", [id])
+        passwords = c.fetchall()
+        for password in passwords:
+            clipboard.copy(password[3])
+        print("{0}[+] Password copied successfully {1}".format(green, end))
+    else:
+        print("{0}[-] Wrong argument {1}".format(red, end))
     __end()
 
 
@@ -216,6 +236,8 @@ def main():
         update_data(conn, c)
     if 'delete' == sys.argv[1]:
         delete_data(conn, c)
+    if 'copy' == sys.argv[1]:
+        copy_db(conn, c)
 
 
 if __name__ == '__main__':
